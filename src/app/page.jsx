@@ -16,7 +16,7 @@ export default function Home() {
                 
                 </div>
                 <div>
-                <Link href="/signup">
+                <Link href="/login">
                 <Button className="ml-2 bg-blue-500 font-semibold hover:!bg-blue-700">
                     Get Started
                 </Button>
@@ -43,7 +43,7 @@ export default function Home() {
             <div className="text-center">
                 <h1 className="text-4xl font-bold">Welcome to ADS Labs</h1>
                 <p className="text-lg mt-4">The best place to find your dream job</p>
-                <Link href="/signup">
+                <Link href="/login">
                 <Button className="mt-4 bg-blue-500 font-semibold hover:!bg-blue-700">
                     Get Started
                 </Button>
