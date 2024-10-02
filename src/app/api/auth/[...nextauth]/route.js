@@ -50,7 +50,7 @@ const handler = NextAuth({
                 name: profile.name || existingUser.name,
                 image: profile.picture || profile.avatar_url || existingUser.image,
                 isOAuth: true,
-                role: existingUser.role,
+                isBlocked: false,
               },
             }
           );
@@ -59,8 +59,9 @@ const handler = NextAuth({
           await User.create({
             name: profile.name,
             email: profile.email,
-            image: profile.picture || profile.avatar_url || "https://static.vecteezy.com/system/resources/thumbnails/005/545/335/small/user-sign-icon-person-symbol-human-avatar-isolated-on-white-backogrund-vector.jpg",
+            image: profile.picture || profile.avatar_url,
             isOAuth: true,
+            isBlocked: false,
           });
         }
       }
@@ -68,12 +69,22 @@ const handler = NextAuth({
       return true;
     },
     async jwt({ token, user }) {
+      await connectToDatabase();
+
+      // Find the latest user data from the database
+      const dbUser = await User.findOne({ email: token.email });
+
+      if (dbUser && user) {
+        user.isBlocked = dbUser.isBlocked; // Update token with the latest blocked status
+      }
+
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
         token.image = user.image;
-        token.role = user.role;
+        token.isBlocked = user.isBlocked;
+        
       }
       return token;
     },
@@ -81,7 +92,8 @@ const handler = NextAuth({
       session.user.id = token.id;
       session.user.email = token.email;
       session.user.name = token.name;
-      session.user.image = token.image 
+      session.user.image = token.image;
+      session.user.isBlocked = token.isBlocked; 
       return session;
     },
   },

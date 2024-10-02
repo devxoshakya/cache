@@ -23,21 +23,6 @@ export default function Home() {
                 </Link>
                 </div>
             </div>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
         </nav>
         <div className="flex justify-center items-center h-screen">
             <div className="text-center">
@@ -53,5 +38,5 @@ export default function Home() {
         <Footer className="bottom-0 my-auto" />
         </main>
     </>
-  );
+    );
 }

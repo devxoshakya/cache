@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
+import React, { useState, useEffect } from "react";
+import { Sidebar, SidebarBody, SidebarFileSystem, SidebarLink } from "@/components/ui/sidebar";
 import {
   IconArrowLeft,
   IconBrandTabler,
@@ -13,38 +13,19 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 
-const SidebarDemo = () => {
+
+export default function SidebarDemo() {
 
 
-    const { data: session, status } = useSession();   
+    const { data: session, status } = useSession();
+    
 
   const links = [
     {
-      label: "Dashboard",
+      label: "Source",
       href: "#",
       icon: (
         <IconBrandTabler className="text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Profile",
-      href: "#",
-      icon: (
-        <IconUserBolt className="text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Settings",
-      href: "#",
-      icon: (
-        <IconSettings className="text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Logout",
-      href: "#",
-      icon: (
-        <IconArrowLeft className="text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
   ];
@@ -66,6 +47,7 @@ const SidebarDemo = () => {
               {links.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
+              <SidebarFileSystem/>
             </div>
           </div>
           <div>
@@ -117,29 +99,65 @@ export const LogoIcon = () => {
   );
 };
 
+
 // Dummy dashboard component with content
 const Dashboard = () => {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  const checkIsDesktop = () => {
+    setIsDesktop(window.innerWidth >= 768);
+  };
+
+  useEffect(() => {
+    // Initial check
+    checkIsDesktop();
+
+    // Event listener for window resize
+    window.addEventListener('resize', checkIsDesktop);
+
+    // Cleanup event listener on unmount
+    return () => {
+      window.removeEventListener('resize', checkIsDesktop);
+    };
+  }, []);
+  
+  // create a isDesktop function with 786px breakpoint
+
+
+
   return (
-    (<div className="flex flex-1">
+    <>
+     {isDesktop ? <DesktopArrow /> : <MobileArrow />}
+    </>
+  );
+};
+
+const DesktopArrow = () => {
+  return(
+    (
+    <div className="flex flex-1 ">
       <div
-        className="p-2 md:p-10 rounded-tl-2xl border border-neutral-700 bg-neutral-900 flex flex-col gap-2 flex-1 w-full min-h-screen">
-        <div className="flex gap-2">
-          {[...new Array(4)].map((i) => (
-            <div
-              key={"first-array" + i}
-              className="h-20 w-full rounded-lg bg-neutral-800 animate-pulse"></div>
-          ))}
-        </div>
-        <div className="flex gap-2 flex-1">
-          {[...new Array(2)].map((i) => (
-            <div
-              key={"second-array" + i}
-              className="min-h-screen w-full rounded-lg  bg-neutral-800 animate-pulse"></div>
-          ))}
+        className="p-2  md:p-10 rounded-tl-2xl border border-neutral-700 bg-neutral-900 flex flex-col gap-2 flex-1 w-full min-h-screen">
+        <div className="h-[40vh] gap-0 w-full md:w-[40%] pt-8 flex">
+          <Image src={"/images/arrow.svg"} className="rotate-[266deg] " height={450} width={250} alt="pointer"></Image>
+          <h1 className="font-mono font-bold text-2xl mt-32 "> *click here* </h1>
         </div>
       </div>
     </div>)
   );
 };
 
-export default SidebarDemo;
+
+const MobileArrow = ({props}) => {
+  return(
+    (<div className="flex flex-1" {...props}>
+      <div
+        className="p-2 md:p-10 rounded-tl-2xl border border-neutral-700 bg-neutral-900 flex flex-col gap-2 flex-1 w-full min-h-screen">
+        <div className="h-[40vh] gap-0 w-full md:w-[40%] pt-8 pr-2 flex-col">
+          <h1 className="font-mono font-bold text-2xl ml-16"> *click here* </h1>
+          <Image src={"/images/arrow.svg"} className="ml-36 " height={450} width={200} alt="pointer"></Image>
+        </div>
+      </div>
+    </div>)
+  );
+};

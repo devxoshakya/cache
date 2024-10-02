@@ -4,6 +4,10 @@ import Link from "next/link";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
+import { File, Folder, Tree } from "@/components/ui/file-tree";
+import fileStructure from "@/data/Files";
+
+
 
 const SidebarContext = createContext(undefined);
 
@@ -143,3 +147,113 @@ export const SidebarLink = ({
     </Link>)
   );
 };
+
+
+export const SidebarFileSystem = ({
+  link,
+  className,
+  ...props
+}) => {
+  const { open, animate } = useSidebar();
+  return (
+    
+      <>
+      <FileTreeDemo/>
+      </>
+  );
+};
+
+export const truncateString = (str, num) => {
+  if (str.length <= num) {
+    return str;
+  }
+  return str.slice(0, num) + "...";
+};
+
+function renderTree(structure) {
+  return structure.map(item => {
+    if (item.item == 'folder') {
+      return (
+        <Folder element={item.name} value={item.id} key={item.id}>
+          {renderTree(item.children)} {/* Recursively render child items */}
+        </Folder>
+      );
+    } else {
+      return (
+        <File value={item.id} key={item.id}>
+          <p>{truncateString(item.name,20)}</p>
+        </File>
+      );
+    }
+  });
+}
+
+export function FileTreeDemo() {
+  return (
+    <div className="relative flex flex-col items-center justify-center overflow-hidden">
+      <Tree
+        className="p-2 overflow-hidden rounded-md"
+        elements={fileStructure}
+      >
+        {renderTree(fileStructure)} {/* Dynamically render the tree */}
+      </Tree>
+    </div>
+  );
+}
+
+
+const ELEMENTS = [
+  {
+    id: "1",
+    isSelectable: true,
+    name: "src",
+    children: [
+      {
+        id: "2",
+        isSelectable: true,
+        name: "app",
+        children: [
+          {
+            id: "3",
+            isSelectable: true,
+            name: "layout.tsx",
+          },
+          {
+            id: "4",
+            isSelectable: true,
+            name: "page.tsx",
+          },
+        ],
+      },
+      {
+        id: "5",
+        isSelectable: true,
+        name: "components",
+        children: [
+          {
+            id: "6",
+            isSelectable: true,
+            name: "header.tsx",
+          },
+          {
+            id: "7",
+            isSelectable: true,
+            name: "footer.tsx",
+          },
+        ],
+      },
+      {
+        id: "8",
+        isSelectable: true,
+        name: "lib",
+        children: [
+          {
+            id: "9",
+            isSelectable: true,
+            name: "utils.ts",
+          },
+        ],
+      },
+    ],
+  },
+];
