@@ -1,7 +1,7 @@
 "use client";;
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import { File, Folder, Tree } from "@/components/ui/file-tree";
@@ -152,13 +152,15 @@ export const SidebarLink = ({
 export const SidebarFileSystem = ({
   link,
   className,
+  setFileLink,
   ...props
 }) => {
   const { open, animate } = useSidebar();
+
   return (
     
       <>
-      <FileTreeDemo/>
+      <FileTreeDemo setFileLink={setFileLink}/>
       </>
   );
 };
@@ -169,33 +171,47 @@ export const truncateString = (str, num) => {
   }
   return str.slice(0, num) + "...";
 };
-
-function renderTree(structure) {
+function renderTree(structure, setFileLink, setSelected) {
   return structure.map(item => {
-    if (item.item == 'folder') {
+    const handleClick = () => {
+      if (item.link) {
+        setFileLink(item.link); // Set the file link when item is clicked
+        setSelected(item.id); // Set the selected item ID
+        console.log("Clicked on " + item.name);
+      }
+    };
+
+    if (item.item === 'folder') {
       return (
         <Folder element={item.name} value={item.id} key={item.id}>
-          {renderTree(item.children)} {/* Recursively render child items */}
+          {renderTree(item.children, setFileLink, setSelected)} {/* Recursively render child items */}
         </Folder>
       );
     } else {
       return (
         <File value={item.id} key={item.id}>
-          <p>{truncateString(item.name,20)}</p>
+          <p onClick={handleClick}>{truncateString(item.name, 15)}</p> {/* Clickable item */}
         </File>
       );
     }
   });
 }
 
-export function FileTreeDemo() {
+export function FileTreeDemo({ setFileLink }) {
+  const [selected, setSelected] = useState(null);
+
+  useEffect(() => {
+    console.log(selected); // Log the selected item ID when it changes
+  }, [selected]);
+
   return (
     <div className="relative flex flex-col items-center justify-center overflow-hidden">
       <Tree
         className="p-2 overflow-hidden rounded-md"
         elements={fileStructure}
+        initialSelected={selected}
       >
-        {renderTree(fileStructure)} {/* Dynamically render the tree */}
+        {renderTree(fileStructure, setFileLink, setSelected)} {/* Pass the functions to renderTree */}
       </Tree>
     </div>
   );

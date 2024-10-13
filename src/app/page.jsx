@@ -26,8 +26,8 @@ export default function Home() {
         </nav>
         <div className="flex justify-center items-center h-screen">
             <div className="text-center">
-                <h1 className="text-4xl font-bold">Welcome to ADS Labs</h1>
-                <p className="text-lg mt-4">The best place to find your dream job</p>
+                <h1 className="text-4xl font-bold">Welcome to Cache</h1>
+                <p className="text-lg mt-4">The best place to find Material !</p>
                 <Link href="/login">
                 <Button className="mt-4 bg-blue-500 font-semibold hover:!bg-blue-700">
                     Get Started

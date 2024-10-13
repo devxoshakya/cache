@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect} from "react";
 import { Sidebar, SidebarBody, SidebarFileSystem, SidebarLink } from "@/components/ui/sidebar";
 import {
   IconArrowLeft,
@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
+import PDFViewer from "@/app/(shared)/pdf/page";
 
 
 export default function SidebarDemo() {
@@ -30,6 +31,10 @@ export default function SidebarDemo() {
     },
   ];
   const [open, setOpen] = useState(false);
+  const [fileLink, setFileLink] = useState("/");
+  useEffect(() => {
+    console.log(fileLink + " is the file link");
+  }, [fileLink]);
   const imageSrc = session?.user?.image;
   const name = session?.user?.name;
   return (
@@ -40,14 +45,14 @@ export default function SidebarDemo() {
         "h-screen"
       )}>
       <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+        <SidebarBody className="hide-scrollbar overflow-scroll justify-between gap-10">
+          <div className="flex flex-col flex-1 hide-scrollbar overflow-y-scroll overflow-x-hidden">
             {open ? <Logo /> : <LogoIcon />}
             <div className="mt-8 flex flex-col gap-2">
               {links.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
-              <SidebarFileSystem/>
+              { <SidebarFileSystem  setFileLink={setFileLink}/>}
             </div>
           </div>
           <div>
@@ -67,7 +72,7 @@ export default function SidebarDemo() {
           </div>
         </SidebarBody>
       </Sidebar>
-      <Dashboard />
+      <Dashboard fileLink={fileLink}/>
     </div>)
   );
 }
@@ -101,33 +106,16 @@ export const LogoIcon = () => {
 
 
 // Dummy dashboard component with content
-const Dashboard = () => {
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  const checkIsDesktop = () => {
-    setIsDesktop(window.innerWidth >= 768);
-  };
-
-  useEffect(() => {
-    // Initial check
-    checkIsDesktop();
-
-    // Event listener for window resize
-    window.addEventListener('resize', checkIsDesktop);
-
-    // Cleanup event listener on unmount
-    return () => {
-      window.removeEventListener('resize', checkIsDesktop);
-    };
-  }, []);
-  
-  // create a isDesktop function with 786px breakpoint
+const Dashboard = ({fileLink}) => {
+ 
 
 
 
   return (
     <>
-     {isDesktop ? <DesktopArrow /> : <MobileArrow />}
+    {fileLink === "/"? <Arrow/> : <PDFViewer fileId={fileLink} />}
+     
+     
     </>
   );
 };
@@ -161,3 +149,31 @@ const MobileArrow = ({props}) => {
     </div>)
   );
 };
+
+const Arrow = () => {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  const checkIsDesktop = () => {
+    setIsDesktop(window.innerWidth >= 768);
+  };
+
+  useEffect(() => {
+    // Initial check
+    checkIsDesktop();
+
+    // Event listener for window resize
+    window.addEventListener('resize', checkIsDesktop);
+
+    // Cleanup event listener on unmount
+    return () => {
+      window.removeEventListener('resize', checkIsDesktop);
+    };
+  }, []);
+  
+  // create a isDesktop function with 786px breakpoint
+  return(
+    <>
+      {isDesktop ? <DesktopArrow /> : <MobileArrow />}
+    </>
+  );
+}
