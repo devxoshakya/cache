@@ -12,7 +12,7 @@ export async function middleware(req) {
   }
 
   // Define the routes that should be protected when a user is signed in
-  const protectedRoutes = ["/home", "/blocked"];
+  const protectedRoutes = ["/blocked"];
 
   // If the user is signed in (there's a token)
   if (token) {
@@ -39,5 +39,5 @@ export async function middleware(req) {
 
 // Specify the paths the middleware should apply to
 export const config = {
-  matcher: ["/login", "/blocked", "/home", "/"],
+  matcher: ["/login", "/blocked", "/"],
 };
